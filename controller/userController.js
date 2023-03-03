@@ -3,6 +3,7 @@ const validateMongoDbId = require('../utils/validateMongoDbId');
 const ApiResult = require("../models/ApiResult");
 const HttpStatusCode = require("../config/HttpStatusCode");
 const asyncHandler = require("express-async-handler");
+const auth = require("../middleware/authMiddleware");
 
 const { generateToken } = require("../config/jwtToken");
 const { generateRefreshToken } = require("../config/refreshtoken");
@@ -36,7 +37,6 @@ const createUser = async (req, res) => {
 const loginUser = asyncHandler(async(req, res)=>{
   const {email, password} = req.body;
   const findUser = await User.findOne({email});
-  console.log(findUser);
   if (findUser && (await findUser.isPasswordMatched(password))) {
     const refreshToken = await generateRefreshToken(findUser?._id);
     const updateuser = await User.findByIdAndUpdate(
@@ -67,4 +67,32 @@ const loginUser = asyncHandler(async(req, res)=>{
   }
 });
 
-module.exports = { createUser, loginUser };
+const index = asyncHandler(async(req, res)=>{
+
+  const users = await User.find()
+
+  res.status(HttpStatusCode.OK).json({
+    success: true,
+    status: 200,
+    message: "Successfully",
+    data: users,
+  });
+
+});
+
+const detail = asyncHandler(async(req, res)=>{
+
+  const id = req.params.id
+
+  const users = await User.findOne({ _id: id})
+
+  res.status(HttpStatusCode.OK).json({
+    success: true,
+    status: 200,
+    message: "Successfully",
+    data: users,
+  });
+
+});
+
+module.exports = { createUser, loginUser, index, detail };

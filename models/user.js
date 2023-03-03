@@ -4,7 +4,7 @@ const crypto = require("crypto");
 
 mongoose.Promise = global.Promise;
 
-var userSchema = new mongoose.Schema(
+let userSchema = new mongoose.Schema(
   {
     email: {
       type: String,
@@ -25,6 +25,14 @@ var userSchema = new mongoose.Schema(
     },
   },
 );
+
+userSchema.set('toJSON', {
+  transform: function (doc, ret, options) {
+      ret.userId = ret._id;
+      delete ret._id;
+      delete ret.__v;
+  }
+}); 
 
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
