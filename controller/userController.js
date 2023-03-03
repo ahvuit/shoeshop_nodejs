@@ -68,7 +68,6 @@ const loginUser = asyncHandler(async(req, res)=>{
 });
 
 const index = asyncHandler(async(req, res)=>{
-
   const users = await User.find()
 
   res.status(HttpStatusCode.OK).json({
@@ -81,9 +80,7 @@ const index = asyncHandler(async(req, res)=>{
 });
 
 const detail = asyncHandler(async(req, res)=>{
-
   const id = req.params.id
-
   const users = await User.findOne({ _id: id})
 
   res.status(HttpStatusCode.OK).json({

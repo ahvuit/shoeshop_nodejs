@@ -4,6 +4,6 @@ const { createUser, loginUser, index, detail } = require('../controller/userCont
 const auth = require("../middleware/authMiddleware");
 router.post('/register',createUser);
 router.post('/login', loginUser);
-router.get('/index',auth.authMiddleware,index);
-router.get('/detail/:id',auth.authMiddleware, detail);
+router.get('/getAllUser',auth.authMiddleware,index);
+router.get('/getUserById/:id',auth.authMiddleware, detail);
 module.exports = router;
