@@ -1,6 +1,6 @@
 const User = require("../models/user");
 const Profile = require("../models/profile");
-const validateMongoDbId = require('../utils/validateMongoDbId');
+const validateMongoDbId = require("../utils/validateMongoDbId");
 const ApiResult = require("../models/ApiResult");
 const HttpStatusCode = require("../config/HttpStatusCode");
 const asyncHandler = require("express-async-handler");
@@ -11,39 +11,47 @@ const { generateRefreshToken } = require("../config/refreshtoken");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 
-
 const createUser = async (req, res) => {
-  const email = req.body.email;
-  const findUser = await User.findOne({ email: email });
-  if (!findUser) {
-    const newUser = await User.create(req.body);
+  try {
+    const email = req.body.email;
     const findUser = await User.findOne({ email: email });
-    let newProfile = await new Profile({
-      userId: findUser._id,
-      imageUrl: "https://cdn-icons-png.flaticon.com/512/6596/6596121.png",
-    }).save();
+    if (!findUser) {
+      const newUser = await User.create(req.body);
+      const findUser = await User.findOne({ email: email });
+      let newProfile = await new Profile({
+        userId: findUser._id,
+        imageUrl: "https://cdn-icons-png.flaticon.com/512/6596/6596121.png",
+      }).save();
 
-    newUser.profile = newProfile; 
-    res.status(HttpStatusCode.OK).json({
-      success: true,
-      status: 200,
-      message: "User created successfully",
-      data: newUser
-    });
-  } else {
+      newUser.profile = newProfile;
+      res.status(HttpStatusCode.OK).json({
+        success: true,
+        status: 200,
+        message: "User created successfully",
+        data: newUser,
+      });
+    } else {
+      res.status(HttpStatusCode.BAD_REQUEST).json({
+        success: false,
+        status: 400,
+        message: "User already exists",
+        data: {},
+      });
+    }
+  } catch (error) {
     res.status(HttpStatusCode.BAD_REQUEST).json({
       success: false,
       status: 400,
-      message: "User already exists",
+      message: error.message,
       data: {},
     });
   }
 };
 
-const loginUser = asyncHandler(async(req, res)=>{
+const loginUser = asyncHandler(async (req, res) => {
   try {
-    const {email, password} = req.body;
-    const findUser = await User.findOne({email});
+    const { email, password } = req.body;
+    const findUser = await User.findOne({ email });
     if (findUser && (await findUser.isPasswordMatched(password))) {
       const refreshToken = await generateRefreshToken(findUser?._id);
       const updatedUser = await User.findByIdAndUpdate(
@@ -80,11 +88,10 @@ const loginUser = asyncHandler(async(req, res)=>{
       data: {},
     });
   }
-  
 });
 
-const index = asyncHandler(async(req, res)=>{
-  const users = await User.find()
+const index = asyncHandler(async (req, res) => {
+  const users = await User.find();
 
   res.status(HttpStatusCode.OK).json({
     success: true,
@@ -92,29 +99,28 @@ const index = asyncHandler(async(req, res)=>{
     message: "Successfully",
     data: users,
   });
-
 });
 
-const detail = asyncHandler(async(req, res)=>{
+const detail = asyncHandler(async (req, res) => {
   try {
-    const id = req.params.id
-    const users = await User.findOne({ _id: id})
-  
-    if(users!==null){
+    const id = req.params.id;
+    const users = await User.findOne({ _id: id });
+
+    if (users !== null) {
       res.status(HttpStatusCode.OK).json({
         success: true,
         status: 200,
         message: "Successfully",
         data: users,
       });
-    }res.status(HttpStatusCode.NOT_FOUND).json({
+    }
+    res.status(HttpStatusCode.NOT_FOUND).json({
       success: false,
       status: 401,
       message: "user is not found",
       data: [],
     });
-  }
-  catch(error){
+  } catch (error) {
     res.status(HttpStatusCode.BAD_REQUEST).json({
       success: false,
       status: 400,
@@ -122,13 +128,10 @@ const detail = asyncHandler(async(req, res)=>{
       data: [],
     });
   }
-  
-  
-
 });
 
 const updatedUser = asyncHandler(async (req, res) => {
-  const id = req.params.id
+  const id = req.params.id;
   validateMongoDbId(id);
 
   try {

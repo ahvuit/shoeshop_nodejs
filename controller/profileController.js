@@ -1,34 +1,42 @@
 const Profile = require("../models/profile");
-const validateMongoDbId = require('../utils/validateMongoDbId');
+const validateMongoDbId = require("../utils/validateMongoDbId");
 const HttpStatusCode = require("../config/HttpStatusCode");
 const asyncHandler = require("express-async-handler");
 
 const getProfile = asyncHandler(async (req, res) => {
-  const userId = req.params.id;
-  const profile = await Profile.findOne({ userId: userId });
-
-  if(profile!==null){
-    res.status(HttpStatusCode.OK).json({
-      success: true,
-      status: 200,
-      message: "Successfully",
-      data: profile,
+  try {
+    const userId = req.params.id;
+    const profile = await Profile.findOne({ userId: userId });
+    if (profile !== null) {
+      res.status(HttpStatusCode.OK).json({
+        success: true,
+        status: 200,
+        message: "Successfully",
+        data: profile,
+      });
+    }
+    res.status(HttpStatusCode.NOT_FOUND).json({
+      success: false,
+      status: 401,
+      message: "profile is not found",
+      data: [],
     });
-  }res.status(HttpStatusCode.NOT_FOUND).json({
-    success: false,
-    status: 401,
-    message: "profile is not found",
-    data: [],
-  });
+  } catch (error) {
+    res.status(HttpStatusCode.BAD_REQUEST).json({
+      success: false,
+      status: 400,
+      message: error.message,
+      data: [],
+    });
+  }
 });
 
 const updatedProfile = asyncHandler(async (req, res) => {
-  const userId = req.params.id;
-  validateMongoDbId(userId);
-
   try {
+    const userId = req.params.id;
+    validateMongoDbId(userId);
     const updatedProfile = await Profile.findOneAndUpdate(
-      {userId: userId},
+      { userId: userId },
       {
         firstName: req?.body?.firstName,
         lastName: req?.body?.lastName,
@@ -50,7 +58,7 @@ const updatedProfile = asyncHandler(async (req, res) => {
     res.status(HttpStatusCode.badRequest).json({
       success: false,
       status: 400,
-      message: error,
+      message: error.message,
     });
   }
 });
