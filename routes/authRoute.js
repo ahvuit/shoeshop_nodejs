@@ -1,9 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const { createUser, loginUser, index, detail } = require('../controller/userController');
+const { createUser, loginUser, index, detail, updatedUser } = require('../controller/userController');
+const { getProfile, updatedProfile } = require('../controller/profileController');
 const auth = require("../middleware/authMiddleware");
 router.post('/register',createUser);
 router.post('/login', loginUser);
-router.get('/getAllUser',auth.authMiddleware,index);
-router.get('/getUserById/:id',auth.authMiddleware, detail);
+router.get('/getAllUser',auth.verifyToken ,index);
+router.get('/getUserById/:id',auth.verifyToken , detail);
+router.put('/updateUser/:id',auth.verifyToken ,auth.isAdmin,updatedUser);
+router.get('/getProfileByUserId/:id',auth.verifyToken ,getProfile);
+router.put('/updatedProfile/:id',auth.verifyToken ,updatedProfile);
 module.exports = router;

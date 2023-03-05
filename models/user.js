@@ -23,6 +23,9 @@ let userSchema = new mongoose.Schema(
       type: Boolean,
       default: true
     },
+    profile: {
+      type: Object,
+    },
     token: { type: String },
   },
 );

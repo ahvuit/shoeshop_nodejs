@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const asyncHandler = require("express-async-handler");
 const HttpStatusCode = require("../config/HttpStatusCode");
 
-const authMiddleware = asyncHandler(async (req, res, next) => {
+const verifyToken = asyncHandler(async (req, res, next) => {
   let token;
   if (req?.headers?.authorization?.startsWith("Bearer")) {
     token = req.headers.authorization.split(" ")[1];
@@ -31,8 +31,8 @@ const authMiddleware = asyncHandler(async (req, res, next) => {
 });
 
 const isAdmin = asyncHandler(async (req, res, next) => {
-  const { email } = req.user;
-  const adminUser = await User.findOne({ email });
+  const id = req.params.id
+  const adminUser =  await User.findOne({ _id: id})
   if (adminUser.uType !== "ADM") {
     return res.status(HttpStatusCode.BAD_REQUEST).json({
       success: false,
@@ -44,4 +44,4 @@ const isAdmin = asyncHandler(async (req, res, next) => {
   }
 });
 
-module.exports = { authMiddleware, isAdmin };
+module.exports = { verifyToken , isAdmin };
