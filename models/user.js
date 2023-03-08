@@ -15,7 +15,7 @@ let userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    uType:{
+    utype:{
         type: String,
         default: "USR",
     },

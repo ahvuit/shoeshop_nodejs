@@ -61,6 +61,9 @@ const loginUser = asyncHandler(async (req, res) => {
         },
         { new: true }
       );
+      const profile = await Profile.findOne({ userId: findUser.id });
+      updatedUser.profile = profile;
+      updatedUser.token = refreshToken;
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         maxAge: 72 * 60 * 60 * 1000,
@@ -70,7 +73,6 @@ const loginUser = asyncHandler(async (req, res) => {
         status: 200,
         message: "successfully",
         data: updatedUser,
-        token: generateToken(findUser?._id),
       });
     } else {
       res.status(HttpStatusCode.NOT_FOUND).json({
@@ -138,7 +140,7 @@ const updatedUser = asyncHandler(async (req, res) => {
     const updatedUser = await User.findByIdAndUpdate(
       id,
       {
-        uType: req?.body?.uType,
+        utype: req?.body?.utype,
         active: req?.body?.active,
       },
       {
