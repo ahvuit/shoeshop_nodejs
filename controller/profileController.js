@@ -7,7 +7,7 @@ const getProfile = asyncHandler(async (req, res) => {
   try {
     const userId = req.params.id;
     const profile = await Profile.findOne({ userId: userId });
-    if (profile !== null) {
+    if (profile) {
       res.status(HttpStatusCode.OK).json({
         success: true,
         status: 200,
@@ -31,7 +31,7 @@ const getProfile = asyncHandler(async (req, res) => {
   }
 });
 
-const updatedProfile = asyncHandler(async (req, res) => {
+const updateProfile = asyncHandler(async (req, res) => {
   try {
     const userId = req.params.id;
     validateMongoDbId(userId);
@@ -63,4 +63,4 @@ const updatedProfile = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { getProfile, updatedProfile };
+module.exports = { getProfile, updateProfile };

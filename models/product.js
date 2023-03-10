@@ -18,34 +18,29 @@ let productSchema = new mongoose.Schema({
   },
   description: {
     type: String,
-    required: true
   },
   rate: {
     type: Number,
-    default:5.0
   },
   productNew: {
     type: Boolean,
-    default: true
   },
   purchase: {
     type: Number,
-    default:0
   },
   stock: {
     type: Number,
   },
   active: {
     type: Boolean,
-    default: true,
   },
   createDate: {
     type: Date,
-    default: Date.now(),
+    default: () => Date.now(),
   },
   dateUpdate: {
     type: Date,
-    default: Date.now(),
+    default: () => Date.now(),
   },
   updateBy: {
     type: String,
@@ -59,6 +54,9 @@ let productSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  sizeTable:{
+    type: Object
+  }
 });
 
 productSchema.set('toJSON', {
@@ -68,5 +66,20 @@ productSchema.set('toJSON', {
       delete ret.__v;
   }
 });
+
+
+productSchema.pre('save',function(next) {
+  if(!this.rate)
+      this.rate = 0
+  if(!this.active)
+      this.active = true
+  if(!this.purchase)
+      this.purchase = 0
+  if(!this.stock)
+      this.stock = 0
+  if(!this.productNew)
+      this.productNew = true
+  next();
+})
 
 module.exports = mongoose.model("Product", productSchema);

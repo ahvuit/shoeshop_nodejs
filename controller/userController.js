@@ -1,36 +1,17 @@
 const User = require("../models/user");
 const Profile = require("../models/profile");
 const validateMongoDbId = require("../utils/validateMongoDbId");
-const ApiResult = require("../models/ApiResult");
 const HttpStatusCode = require("../config/HttpStatusCode");
 const asyncHandler = require("express-async-handler");
-const auth = require("../middleware/authMiddleware");
 
 const { generateToken } = require("../config/jwtToken");
 const { generateRefreshToken } = require("../config/refreshtoken");
-const crypto = require("crypto");
-const jwt = require("jsonwebtoken");
 
-const createUser = async (req, res) => {
+const createUser = asyncHandler(async (req, res) => {
   try {
     const email = req.body.email;
     const findUser = await User.findOne({ email: email });
-    if (!findUser) {
-      const newUser = await User.create(req.body);
-      const findUser = await User.findOne({ email: email });
-      let newProfile = await new Profile({
-        userId: findUser._id,
-        imageUrl: "https://cdn-icons-png.flaticon.com/512/6596/6596121.png",
-      }).save();
-
-      newUser.profile = newProfile;
-      res.status(HttpStatusCode.OK).json({
-        success: true,
-        status: 200,
-        message: "User created successfully",
-        data: newUser,
-      });
-    } else {
+    if (findUser) {
       res.status(HttpStatusCode.BAD_REQUEST).json({
         success: false,
         status: 400,
@@ -38,6 +19,18 @@ const createUser = async (req, res) => {
         data: {},
       });
     }
+    const newUser = await User.create(req.body);
+    let newProfile = await new Profile({
+      userId: newUser._id,
+      imageUrl: "https://cdn-icons-png.flaticon.com/512/6596/6596121.png",
+    }).save();
+    newUser.profile = newProfile;
+    res.status(HttpStatusCode.OK).json({
+      success: true,
+      status: 200,
+      message: "User created successfully",
+      data: newUser,
+    });
   } catch (error) {
     res.status(HttpStatusCode.BAD_REQUEST).json({
       success: false,
@@ -46,7 +39,7 @@ const createUser = async (req, res) => {
       data: {},
     });
   }
-};
+});
 
 const loginUser = asyncHandler(async (req, res) => {
   try {
@@ -132,7 +125,7 @@ const detail = asyncHandler(async (req, res) => {
   }
 });
 
-const updatedUser = asyncHandler(async (req, res) => {
+const updateUser = asyncHandler(async (req, res) => {
   const id = req.params.id;
   validateMongoDbId(id);
 
@@ -162,4 +155,4 @@ const updatedUser = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { createUser, loginUser, index, detail, updatedUser };
+module.exports = { createUser, loginUser, index, detail, updateUser };
