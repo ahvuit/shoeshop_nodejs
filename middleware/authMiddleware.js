@@ -19,6 +19,7 @@ const verifyToken = asyncHandler(async (req, res, next) => {
         success: false,
         status: 401,
         message: "Not Authorized token expired, Please Login again",
+        data:null
       });
     }
   } else {
@@ -26,6 +27,7 @@ const verifyToken = asyncHandler(async (req, res, next) => {
       success: false,
       status: 401,
       message: "There is no token attached to header",
+      data:null
     });
   }
 });

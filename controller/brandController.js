@@ -8,66 +8,40 @@ const createBrand = asyncHandler(async (req, res) => {
     const brandName = req.body.brandName;
     const findBrand = await Brand.findOne({ brandName: brandName });
     if (findBrand) {
-      res.status(HttpStatusCode.BAD_REQUEST).json({
-        success: false,
-        status: 400,
-        message: "brand name is already in use",
-        data: [],
-      });
+      res.status(HttpStatusCode.BAD_REQUEST).json({ success: false, status: 400, message: "brand name is already in use", data: null });
+    } else {
+      const newBrand = await Brand.create(req.body);
+      res.status(HttpStatusCode.OK).json({ success: true, status: 200, message: "Successfully", data: newBrand });
     }
-    const newBrand = await Brand.create(req.body);
-    res.status(HttpStatusCode.OK).json({
-      success: true,
-      status: 200,
-      message: "Successfully",
-      data: newBrand,
-    });
   } catch (error) {
-    res.status(HttpStatusCode.BAD_REQUEST).json({
-      success: false,
-      status: 400,
-      message: error.message,
-      data: [],
-    });
+    res.status(HttpStatusCode.BAD_REQUEST).json({ success: false, status: 400, message: error.message, data: null });
   }
 });
 
 const getAllBrands = asyncHandler(async (req, res) => {
-  const brands = await Brand.find();
-
-  res.status(HttpStatusCode.OK).json({
-    success: true,
-    status: 200,
-    message: "Successfully",
-    data: brands,
-  });
+  try {
+    const brands = await Brand.find();
+    res.status(HttpStatusCode.OK).json({ success: true, status: 200, message: "Successfully", data: brands });
+  } catch (error) {
+    res.status(HttpStatusCode.BAD_REQUEST).json({ success: false, status: 400, message: error.message, data: null });
+  }
 });
 
 const getBrandDetails = asyncHandler(async (req, res) => {
   try {
     const id = req.params.id;
-    const brand = await Brand.findOne({ _id: id });
-
-    if (brand) {
-      res.status(HttpStatusCode.OK).json({
-        success: true,
-        status: 200,
-        message: "Successfully",
-        data: brand,
-      });
-    } res.status(HttpStatusCode.NOT_FOUND).json({
-        success: false,
-        status: 401,
-        message: "brand is not found",
-        data: [],
-      });
-  } catch (error) {
-    res.status(HttpStatusCode.BAD_REQUEST).json({
-      success: false,
-      status: 400,
-      message: error.message,
-      data: [],
+    await Brand.findOne({ _id: id }).then(brand => {
+      if (brand) {
+        res.status(HttpStatusCode.OK).json({ success: true, status: 200, message: "Successfully", data: brand });
+      } else {
+        res.status(HttpStatusCode.NOT_FOUND).json({ success: false, status: 401, message: "brand is not found", data: null });
+      }
+    }).catch((err) => {
+      console.error(err);
+      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ success: false, status: 500, message: "An error occurred while searching brand details.", data: null });
     });
+  } catch (error) {
+    res.status(HttpStatusCode.BAD_REQUEST).json({ success: false, status: 400, message: error.message, data: null });
   }
 });
 
@@ -89,24 +63,12 @@ const updateBrand = asyncHandler(async (req, res) => {
           new: true,
         }
       );
-      res.status(HttpStatusCode.OK).json({
-        success: true,
-        status: 200,
-        message: "Successfully",
-        data: updatedBrand,
-      });
-    } res.status(HttpStatusCode.BAD_REQUEST).json({
-        success: false,
-        status: 400,
-        message: "brand name is already",
-        data: [],
-      });
+      res.status(HttpStatusCode.OK).json({ success: true, status: 200, message: "Successfully", data: updatedBrand });
+    } else {
+      res.status(HttpStatusCode.BAD_REQUEST).json({ success: false, status: 400, message: "brand name is already", data: null });
+    }
   } catch (error) {
-    res.status(HttpStatusCode.badRequest).json({
-      success: false,
-      status: 400,
-      message: error.message,
-    });
+    res.status(HttpStatusCode.BAD_REQUEST).json({ success: false, status: 400, message: error.message, data: null });
   }
 });
 

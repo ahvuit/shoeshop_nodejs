@@ -57,6 +57,9 @@ let productSchema = new mongoose.Schema({
   sizeTable: {
     type: Object,
   },
+  sales: {
+    type: Object,
+  },
   brandName: { type: String},
   categoryName: { type: String},
 });
