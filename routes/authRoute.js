@@ -6,6 +6,8 @@ const { createProduct, getAllProducts, getProductDetails, updateProduct } = requ
 const { createBrand, getAllBrands, getBrandDetails, updateBrand } = require('../controller/brandController');
 const { createCategory, getAllCategories, getCategoryDetails, updateCategory } = require('../controller/categoryController');
 const { getAllSizeTables, getSizeTableDetails, updateSizeTable } = require('../controller/sizeTableController');
+const { getAllSales, getSalesById, createSales, updateSales } = require('../controller/salesController');
+const { getSaleDetailsBySalesId, createSaleDetails, deleteSaleDetails } = require('../controller/saleDetailsController');
 const auth = require("../middleware/authMiddleware");
 
 //router auth & user
@@ -36,4 +38,13 @@ router.put('/updateCategory/:id',auth.verifyToken ,updateCategory);
 router.get('/getAllSizeTables',auth.verifyToken ,getAllSizeTables);
 router.get('/getSizeTableDetails/:id',auth.verifyToken ,getSizeTableDetails);
 router.put('/updateSizeTable/:id',auth.verifyToken ,updateSizeTable);
+//router sales
+router.get('/getAllSales',auth.verifyToken ,getAllSales);
+router.get('/getSalesById/:id',auth.verifyToken ,getSalesById);
+router.post('/insertSales',auth.verifyToken ,createSales);
+router.put('/updateSales/:id',auth.verifyToken ,updateSales);
+//router saleDetails
+router.get('/getSaleDetailsBySalesId/:id',auth.verifyToken ,getSaleDetailsBySalesId);
+router.post('/insertSalesDetails',auth.verifyToken ,createSaleDetails);
+router.delete('/deleteSaleDetails/:id',auth.verifyToken ,deleteSaleDetails);
 module.exports = router;

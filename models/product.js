@@ -6,15 +6,15 @@ let productSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
   },
   price: {
     type: Number,
-    required: true
+    required: true,
   },
   image: {
     type: String,
-    required: true
+    required: true,
   },
   description: {
     type: String,
@@ -54,32 +54,28 @@ let productSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  sizeTable:{
-    type: Object
-  }
+  sizeTable: {
+    type: Object,
+  },
+  brandName: { type: String},
+  categoryName: { type: String},
 });
 
-productSchema.set('toJSON', {
+productSchema.set("toJSON", {
   transform: function (doc, ret, options) {
-      ret.productId = ret._id;
-      delete ret._id;
-      delete ret.__v;
-  }
+    ret.productId = ret._id;
+    delete ret._id;
+    delete ret.__v;
+  },
 });
 
-
-productSchema.pre('save',function(next) {
-  if(!this.rate)
-      this.rate = 0
-  if(!this.active)
-      this.active = true
-  if(!this.purchase)
-      this.purchase = 0
-  if(!this.stock)
-      this.stock = 0
-  if(!this.productNew)
-      this.productNew = true
+productSchema.pre("save", function (next) {
+  if (!this.rate) this.rate = 0;
+  if (!this.active) this.active = true;
+  if (!this.purchase) this.purchase = 0;
+  if (!this.stock) this.stock = 0;
+  if (!this.productNew) this.productNew = true;
   next();
-})
+});
 
 module.exports = mongoose.model("Product", productSchema);

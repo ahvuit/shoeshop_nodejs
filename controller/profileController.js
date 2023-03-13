@@ -6,20 +6,28 @@ const asyncHandler = require("express-async-handler");
 const getProfile = asyncHandler(async (req, res) => {
   try {
     const userId = req.params.id;
-    const profile = await Profile.findOne({ userId: userId });
-    if (profile) {
-      res.status(HttpStatusCode.OK).json({
-        success: true,
-        status: 200,
-        message: "Successfully",
-        data: profile,
+    await Profile.findOne({ userId: userId }).then(profile => {
+      if (profile) {
+        res.status(HttpStatusCode.OK).json({
+          success: true,
+          status: 200,
+          message: "Successfully",
+          data: profile,
+        });
+      } res.status(HttpStatusCode.NOT_FOUND).json({
+        success: false,
+        status: 404,
+        message: "Profile is not found.",
+        data: null,
       });
-    }
-    res.status(HttpStatusCode.NOT_FOUND).json({
-      success: false,
-      status: 401,
-      message: "profile is not found",
-      data: [],
+    }).catch((err) => {
+      console.error(err);
+      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        status: 500,
+        message: "An error occurred while finding the profile.",
+        data: null,
+      });
     });
   } catch (error) {
     res.status(HttpStatusCode.BAD_REQUEST).json({

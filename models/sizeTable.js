@@ -66,4 +66,4 @@ sizeTableSchema.pre('save',function(next) {
   next();
 })
 
-module.exports = mongoose.model("sizeTable", sizeTableSchema);
+module.exports = mongoose.model("SizeTable", sizeTableSchema);
