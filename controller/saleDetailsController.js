@@ -20,7 +20,7 @@ const createSaleDetails = asyncHandler(async (req, res) => {
       }).save();
       res.status(HttpStatusCode.OK).json({ success: true, status: 200, message: "Successfully", data: newSaleDetails });
     } else {
-      res.status(HttpStatusCode.BAD_REQUEST).json({ success: false, status: 400, message: "The product already exists in another promotion.", data: null });
+      res.status(HttpStatusCode.HTTP_NOT_IMPLEMENTED).json({ success: false, status: 401, message: "The product already exists in another promotion.", data: null });
     }
   } catch (error) {
     res.status(HttpStatusCode.BAD_REQUEST).json({ success: false, status: 400, message: error.message, data: null });

@@ -12,16 +12,18 @@ const createCategory = asyncHandler(async (req, res) => {
         success: false,
         status: 400,
         message: "category name is already in use",
-        data: [],
+        data: null,
       });
     }
-    const newCategory = await Category.create(req.body);
-    res.status(HttpStatusCode.OK).json({
-      success: true,
-      status: 200,
-      message: "Successfully",
-      data: newCategory,
-    });
+    else {
+      const newCategory = await Category.create(req.body);
+      res.status(HttpStatusCode.OK).json({
+        success: true,
+        status: 200,
+        message: "Successfully",
+        data: newCategory,
+      });
+    }
   } catch (error) {
     res.status(HttpStatusCode.BAD_REQUEST).json({
       success: false,
@@ -55,18 +57,20 @@ const getCategoryDetails = asyncHandler(async (req, res) => {
         message: "Successfully",
         data: category,
       });
-    } res.status(HttpStatusCode.NOT_FOUND).json({
+    }else{
+      res.status(HttpStatusCode.NOT_FOUND).json({
         success: false,
         status: 401,
         message: "category is not found",
-        data: [],
+        data: null,
       });
+    }
   } catch (error) {
     res.status(HttpStatusCode.BAD_REQUEST).json({
       success: false,
       status: 400,
       message: error.message,
-      data: [],
+      data: null,
     });
   }
 });
@@ -78,7 +82,7 @@ const updateCategory = asyncHandler(async (req, res) => {
     const updatedCategory = await Category.findOneAndUpdate(
       { _id: id },
       {
-          categoryName: req?.body?.categoryName,
+        categoryName: req?.body?.categoryName,
       },
       {
         new: true,
