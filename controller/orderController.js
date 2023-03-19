@@ -18,6 +18,9 @@ const createOrder = asyncHandler(async (req, res) => {
             email: orderModel.email,
             note: orderModel.note,
             address: orderModel.address,
+            total: 0,
+            momo: null,
+            payment: false
         });
         const newArray = [];
         return Promise.all([fastFunction(listOrderDetails, newOrder, newArray), slowFunction(newOrder, newArray, res)]);
@@ -38,12 +41,12 @@ function fastFunction(listOrderDetails, newOrder, newArray) {
                     price: element.price,
                     total: element.price * element.quantity
                 });
-                newOrder.total+=newOrderDetails.total;
+                newOrder.total += newOrderDetails.total;
                 newArray.push(newOrderDetails);
             });
             const findStatus = await Status.find();
-            const firstValue = findStatus[0]._id._id;
-            newOrder.statusId = firstValue;
+            newOrder.statusId = findStatus[0]._id;
+            newOrder.save();
             resolve()
         }, 100)
     })
@@ -62,15 +65,72 @@ function slowFunction(newOrder, newArray, res) {
 const getAllOrders = asyncHandler(async (req, res) => {
     try {
         const orders = await Order.find();
-        res.status(HttpStatusCode.OK).json({ success: true, status: 200, message: "Successfully", data: orders });
+        const myArray = [];
+        return Promise.all([fastFunction1(orders, myArray), slowFunction1(myArray, res)]);
     } catch (error) {
         res.status(HttpStatusCode.BAD_REQUEST).json({ success: false, status: 400, message: error.message, data: null });
     }
 });
 
+function fastFunction1(orders, myArray) {
+    return new Promise((resolve) => {
+        setTimeout(async function () {
+            orders.forEach((element) => {
+                configOrder(element, myArray);
+            });
+            resolve()
+        }, 100)
+    })
+}
+
+function fastFunction2(order, myArray) {
+    return new Promise((resolve) => {
+        setTimeout(function () {
+            configOrder(order, myArray);
+            resolve()
+        }, 100)
+    })
+}
+
+async function configOrder(element, myArray) {
+    const findStatus = await Status.findOne({ _id: element.statusId });
+    const firstValue = findStatus.statusName;
+    element.statusName = firstValue;
+    const orderDetails = await OrderDetails.find({ orderId: element._id });
+    orderDetails.forEach(async (element) => {
+        const product = await Product.findOne({ _id: element.productId });
+        element.name = product.name;
+        element.imageUrl = product.image;
+    });
+    const orderOrderDetails = new OrderOrderDetails(element, orderDetails);
+    myArray.push(orderOrderDetails);
+}
+
+function slowFunction1(myArray, res) {
+    return new Promise((resolve) => {
+        setTimeout(function () {
+            res.status(HttpStatusCode.OK).json({ success: true, status: 200, message: "Successfully", data: myArray });
+            resolve()
+        }, 300)
+    })
+}
+
 const getOrderDetails = asyncHandler(async (req, res) => {
     try {
-
+        const orderId = req.params.id;
+        await Order.findOne({ _id: orderId })
+            .then(async (order) => {
+                if (order) {
+                    const Array = [];
+                    return Promise.all([fastFunction2(order, Array), slowFunction1(Array, res)]);
+                } else {
+                    res.status(HttpStatusCode.NOT_FOUND).json({ success: false, status: 404, message: "Cannot find orders.", data: null });
+                }
+            })
+            .catch((err) => {
+                console.error(err);
+                res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ success: false, status: 500, message: "An error occurred while searching for sales details.", data: null });
+            });
     } catch (error) {
         res.status(HttpStatusCode.BAD_REQUEST).json({ success: false, status: 400, message: error.message, data: null });
     }
@@ -78,7 +138,16 @@ const getOrderDetails = asyncHandler(async (req, res) => {
 
 const getOrderByUserId = asyncHandler(async (req, res) => {
     try {
-
+        const userId = req.params.id;
+        await Order.find({ userId: userId })
+            .then(async (order) => {
+                const Array = [];
+                return Promise.all([fastFunction1(order, Array), slowFunction1(Array, res)]);
+            })
+            .catch((err) => {
+                console.error(err);
+                res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ success: false, status: 500, message: "An error occurred while searching for sales details.", data: null });
+            });
     } catch (error) {
         res.status(HttpStatusCode.BAD_REQUEST).json({ success: false, status: 400, message: error.message, data: null });
     }
@@ -86,7 +155,21 @@ const getOrderByUserId = asyncHandler(async (req, res) => {
 
 const updateOrder = asyncHandler(async (req, res) => {
     try {
-
+        const orderId = req.params.id;
+        await Order.findByIdAndUpdate({ _id: orderId })
+            .then(async (order) => {
+                if(order){
+                    order.statusId = req.body.statusId;
+                    order.save();
+                    res.status(HttpStatusCode.OK).json({ success: true, status: 200, message: "Successfully", data: order });
+                }else{
+                    res.status(HttpStatusCode.NOT_FOUND).json({ success: false, status: 404, message: "Cannot find order.", data: null });
+                }
+            })
+            .catch((err) => {
+                console.error(err);
+                res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ success: false, status: 500, message: "An error occurred while payment for order.", data: null });
+            });
     } catch (error) {
         res.status(HttpStatusCode.BAD_REQUEST).json({ success: false, status: 400, message: error.message, data: null });
     }
@@ -94,7 +177,21 @@ const updateOrder = asyncHandler(async (req, res) => {
 
 const payment = asyncHandler(async (req, res) => {
     try {
-
+        const orderId = req.params.id;
+        await Order.findByIdAndUpdate({ _id: orderId })
+            .then(async (order) => {
+                if(order){
+                    order.payment = true;
+                    order.save();
+                    res.status(HttpStatusCode.OK).json({ success: true, status: 200, message: "Successfully", data: order });
+                }else{
+                    res.status(HttpStatusCode.NOT_FOUND).json({ success: false, status: 404, message: "Cannot find order.", data: null });
+                }
+            })
+            .catch((err) => {
+                console.error(err);
+                res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ success: false, status: 500, message: "An error occurred while payment for order.", data: null });
+            });
     } catch (error) {
         res.status(HttpStatusCode.BAD_REQUEST).json({ success: false, status: 400, message: error.message, data: null });
     }
@@ -102,7 +199,28 @@ const payment = asyncHandler(async (req, res) => {
 
 const cancelOrder = asyncHandler(async (req, res) => {
     try {
-
+        const orderId = req.params.id;
+        const findStatus = await Status.find();
+        await Order.findByIdAndUpdate({ _id: orderId })
+            .then(async (order) => {
+                if(order){
+                    if(order.payment == true || order.statusId == findStatus[3]._id || order.statusId == findStatus[4]._id){
+                        res.status(HttpStatusCode.OK).json({ success: true, status: 200, message: "Cannot cancel order.", data: null });
+                    }else{
+                        order.statusId = findStatus[findStatus.length -1]._id;
+                        order.save();
+                        var o = new Order(order);
+                        o.statusName = findStatus[findStatus.length -1].statusName;
+                        res.status(HttpStatusCode.OK).json({ success: true, status: 200, message: "Successfully", data: o });
+                    }
+                }else{
+                    res.status(HttpStatusCode.NOT_FOUND).json({ success: false, status: 404, message: "Cannot find order.", data: null });
+                }
+            })
+            .catch((err) => {
+                console.error(err);
+                res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ success: false, status: 500, message: "An error occurred while cancel for order.", data: null });
+            });
     } catch (error) {
         res.status(HttpStatusCode.BAD_REQUEST).json({ success: false, status: 400, message: error.message, data: null });
     }

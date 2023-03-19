@@ -7,7 +7,7 @@ let orderSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  fistName: {
+  firstName: {
     type: String,
   },
   lastName: {
@@ -41,7 +41,7 @@ let orderSchema = new mongoose.Schema({
     type: Number,
   },
   payment: {
-    type: String,
+    type: Boolean,
   },
   momo: {
     type: String,
@@ -49,6 +49,9 @@ let orderSchema = new mongoose.Schema({
   address: {
     type: String,
     required: true,
+  },
+  statusName: {
+    type: String,
   }
 });
 
@@ -61,9 +64,6 @@ orderSchema.set('toJSON', {
 });
 
 orderSchema.pre("save", function (next) {
-  this.momo = null;
-  this.payment = false;
-  this.total = 0;
   this.deliveryDate.setDate(this.deliveryDate.getDate() + 3);
   next();
 });

@@ -24,6 +24,12 @@ let orderDetailsSchema = new mongoose.Schema({
   },
   total: {
     type: Number,
+  },
+  imageUrl: {
+    type: String,
+  },
+  name: {
+    type: String,
   }
 });
 

@@ -15,6 +15,7 @@ const createProduct = asyncHandler(async (req, res) => {
     if (findProduct) {
       res.status(HttpStatusCode.BAD_REQUEST).json({ success: false, status: 400, message: "product name is already", data: null });
     }
+   else{
     const newProduct = await Product.create(req.body);
     const newSizeTable = await new SizeTable({
       productId: newProduct._id,
@@ -25,6 +26,7 @@ const createProduct = asyncHandler(async (req, res) => {
     newProduct.brandName = findBrand.brandName;
     newProduct.categoryName = findCategory.categoryName;
     res.status(HttpStatusCode.OK).json({ success: true, status: 200, message: "Successfully", data: newProduct });
+   }
   } catch (error) {
     res.status(HttpStatusCode.BAD_REQUEST).json({ success: false, status: 400, message: error.message, data: null });
   }

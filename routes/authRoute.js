@@ -61,6 +61,6 @@ router.get('/getAllOrders',auth.verifyToken,getAllOrders);
 router.get('/getOrderDetails/:id',auth.verifyToken ,getOrderDetails);
 router.get('/getOrderByUserId/:id',auth.verifyToken ,getOrderByUserId);
 router.put('/updateOrder/:id',auth.verifyToken ,updateOrder);
-router.put('/payment/:id',auth.verifyToken ,payment);
+router.put('/paymentOrder/:id',auth.verifyToken ,payment);
 router.put('/cancelOrder/:id',auth.verifyToken ,cancelOrder);
 module.exports = router;
