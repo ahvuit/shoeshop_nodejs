@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const { createUser, loginUser, index, detail, updateUser } = require('../controller/userController');
+const { getAllComments, createComment } = require('../controller/commentController');
+const { insertOrUpdateKeyword, getProductByUserId } = require('../controller/searchHistoryController');
 const { getProfile, updateProfile } = require('../controller/profileController');
 const { createProduct, getAllProducts, getProductDetails, updateProduct } = require('../controller/productController');
 const { createBrand, getAllBrands, getBrandDetails, updateBrand } = require('../controller/brandController');
@@ -42,7 +44,7 @@ router.get('/getSizeTableDetails/:id', getSizeTableDetails);
 router.put('/updateSizeTable/:id',auth.verifyToken ,updateSizeTable);
 //router sales
 router.get('/getAllSales',getAllSales);
-router.get('/getSalesById/:id',auth.verifyToken ,getSalesById);
+router.get('/getSalesById/:id',getSalesById);
 router.post('/insertSales',auth.verifyToken ,createSales);
 router.put('/updateSales/:id',auth.verifyToken ,updateSales);
 //router saleDetails
@@ -63,4 +65,10 @@ router.get('/getOrderByUserId/:id',auth.verifyToken ,getOrderByUserId);
 router.put('/updateOrder/:id',auth.verifyToken ,updateOrder);
 router.put('/paymentOrder/:id',auth.verifyToken ,payment);
 router.put('/cancelOrder/:id',auth.verifyToken ,cancelOrder);
+//router Comment
+router.post('/insertComment',auth.verifyToken ,createComment);
+router.get('/getAllComments/:id',getAllComments);
+//router search history
+router.put('/insertOrUpdateKeyword',auth.verifyToken ,insertOrUpdateKeyword);
+router.get('/getProductByUserId/:id',auth.verifyToken ,getProductByUserId);
 module.exports = router;
