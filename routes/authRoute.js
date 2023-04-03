@@ -9,7 +9,7 @@ const { createProduct, getAllProducts, getProductDetails, updateProduct } = requ
 const { createBrand, getAllBrands, getBrandDetails, updateBrand } = require('../controller/brandController');
 const { createCategory, getAllCategories, getCategoryDetails, updateCategory } = require('../controller/categoryController');
 const { getAllSizeTables, getSizeTableDetails, updateSizeTable } = require('../controller/sizeTableController');
-const { getAllSales, getSalesById, createSales, updateSales } = require('../controller/salesController');
+const { getAllSales, getSalesById, createSales, updateSales, getAllSalesComingSoon, getAllSalesActive } = require('../controller/salesController');
 const { getSaleDetailsBySalesId, createSaleDetails, deleteSaleDetails } = require('../controller/saleDetailsController');
 const { getStatusDetails, createStatus, deleteStatus, updateStatus, getAllStatus } = require('../controller/StatusController');
 const { createOrder, getAllOrders, getOrderDetails, getOrderByUserId, updateOrder, payment, cancelOrder } = require('../controller/OrderController');
@@ -45,6 +45,8 @@ router.get('/getSizeTableDetails/:id', getSizeTableDetails);
 router.put('/updateSizeTable/:id', auth.verifyToken, auth.isAdmin, updateSizeTable);
 //router sales
 router.get('/getAllSales', getAllSales);
+router.get('/getAllSalesActive', getAllSalesActive);
+router.get('/getAllSalesComingSoon', getAllSalesComingSoon);
 router.get('/getSalesById/:id', getSalesById);
 router.post('/insertSales', auth.verifyToken, auth.isAdmin, createSales);
 router.put('/updateSales/:id', auth.verifyToken, auth.isAdmin, updateSales);
