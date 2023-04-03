@@ -49,24 +49,18 @@ const updateBrand = asyncHandler(async (req, res) => {
   try {
     const id = req.params.id;
     validateMongoDbId(id);
-    const brandName = req.body.brandName;
-    const findBrand = await Brand.findOne({ brandName: brandName });
-    if (!findBrand) {
-      const updatedBrand = await Brand.findOneAndUpdate(
-        { _id: id },
-        {
-          brandName: req?.body?.brandName,
-          information: req?.body?.information,
-          logo: req?.body?.logo,
-        },
-        {
-          new: true,
-        }
-      );
-      res.status(HttpStatusCode.OK).json({ success: true, status: 200, message: "Successfully", data: updatedBrand });
-    } else {
-      res.status(HttpStatusCode.BAD_REQUEST).json({ success: false, status: 400, message: "brand name is already", data: null });
-    }
+    const updatedBrand = await Brand.findOneAndUpdate(
+      { _id: id },
+      {
+        brandName: req?.body?.brandName,
+        information: req?.body?.information,
+        logo: req?.body?.logo,
+      },
+      {
+        new: true,
+      }
+    );
+    res.status(HttpStatusCode.OK).json({ success: true, status: 200, message: "Successfully", data: updatedBrand });
   } catch (error) {
     res.status(HttpStatusCode.BAD_REQUEST).json({ success: false, status: 400, message: error.message, data: null });
   }
