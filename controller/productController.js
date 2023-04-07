@@ -15,18 +15,18 @@ const createProduct = asyncHandler(async (req, res) => {
     if (findProduct) {
       res.status(HttpStatusCode.BAD_REQUEST).json({ success: false, status: 400, message: "product name is already", data: null });
     }
-   else{
-    const newProduct = await Product.create(req.body);
-    const newSizeTable = await new SizeTable({
-      productId: newProduct._id,
-    }).save();
-    newProduct.sizeTable = newSizeTable;
-    const findBrand = await Brand.findOne({ _id: newProduct.brandId });
-    const findCategory = await Category.findOne({ _id: newProduct.categoryId });
-    newProduct.brandName = findBrand.brandName;
-    newProduct.categoryName = findCategory.categoryName;
-    res.status(HttpStatusCode.OK).json({ success: true, status: 200, message: "Successfully", data: newProduct });
-   }
+    else {
+      const newProduct = await Product.create(req.body);
+      const newSizeTable = await new SizeTable({
+        productId: newProduct._id,
+      }).save();
+      newProduct.sizeTable = newSizeTable;
+      const findBrand = await Brand.findOne({ _id: newProduct.brandId });
+      const findCategory = await Category.findOne({ _id: newProduct.categoryId });
+      newProduct.brandName = findBrand.brandName;
+      newProduct.categoryName = findCategory.categoryName;
+      res.status(HttpStatusCode.OK).json({ success: true, status: 200, message: "Successfully", data: newProduct });
+    }
   } catch (error) {
     res.status(HttpStatusCode.BAD_REQUEST).json({ success: false, status: 400, message: error.message, data: null });
   }
@@ -127,9 +127,9 @@ const updateProduct = asyncHandler(async (req, res) => {
           image: req?.body?.image ?? findProduct.image,
           dateUpdated: Date.now(),
           updateBy: req?.body?.updateBy,
-        }
+        }, { new: true }
       );
-      res.status(HttpStatusCode.OK).json({ success: true, status: 200, message: "Successfully", data: updatedProduct, });
+      res.status(HttpStatusCode.OK).json({ success: true, status: 200, message: "Successfully", data: updatedProduct });
     }
   } catch (error) {
     res.status(HttpStatusCode.BAD_REQUEST).json({ success: false, status: 400, message: error.message, data: null });

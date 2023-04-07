@@ -38,7 +38,7 @@ const isAdmin = asyncHandler(async (req, res, next) => {
   if (token) {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const adminUser = await User.findById(decoded?.id);
-    if (adminUser.utype !== "ADM") {
+    if (adminUser.utype != "ADM") {
       return res.status(HttpStatusCode.BAD_REQUEST).json({
         success: false,
         status: 401,
@@ -72,4 +72,4 @@ const isStaff = asyncHandler(async (req, res, next) => {
 
 });
 
-module.exports = { verifyToken, isAdmin };
+module.exports = { verifyToken, isAdmin, isStaff };

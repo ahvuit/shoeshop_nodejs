@@ -6,12 +6,14 @@ const validateMongoDbId = require("../utils/validateMongodbId");
 const createSales = asyncHandler(async (req, res) => {
   try {
     const salesName = req.body.salesName;
-    await Sales.findOne({ salesName: salesName }).then(sales => {
+    await Sales.findOne({ salesName: salesName }).then(async sales => {
       if (sales) {
         res.status(HttpStatusCode.BAD_REQUEST).json({ success: false, status: 400, message: "salesName is already", data: null });
       }
-      const newSales = Sales.create(req.body);
-      res.status(HttpStatusCode.OK).json({ success: true, status: 200, message: "Successfully", data: newSales });
+      else{
+        const newSales = await Sales.create(req.body);
+        res.status(HttpStatusCode.OK).json({ success: true, status: 200, message: "Successfully", data: newSales });
+      }
     }).catch((err) => {
       console.error(err);
       res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ success: false, status: 500, message: "An error occurred while creating the sales.", data: null });
@@ -45,7 +47,7 @@ const getAllSalesActive = asyncHandler(async (req, res) => {
     let date = new Date().getTime();
 
     listSales.forEach(element => {
-      if (element.endDay > date || element.endDay == date) {
+      if ((element.endDay > date || element.endDay == date) && element.startDay < date) {
         list.push(element);
       }
     });

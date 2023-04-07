@@ -57,6 +57,7 @@ const loginUser = asyncHandler(async (req, res) => {
       const profile = await Profile.findOne({ userId: findUser.id });
       updatedUser.profile = profile;
       updatedUser.token = refreshToken;
+      console.log(updatedUser.token);
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         maxAge: 72 * 60 * 60 * 1000,

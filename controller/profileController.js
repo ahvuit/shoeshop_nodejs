@@ -1,5 +1,4 @@
 const Profile = require("../models/profile");
-const validateMongoDbId = require("../utils/validateMongoDbId");
 const HttpStatusCode = require("../config/HttpStatusCode");
 const asyncHandler = require("express-async-handler");
 
@@ -42,7 +41,6 @@ const getProfile = asyncHandler(async (req, res) => {
 const updateProfile = asyncHandler(async (req, res) => {
   try {
     const userId = req.params.id;
-    validateMongoDbId(userId);
     const updatedProfile = await Profile.findOneAndUpdate(
       { userId: userId },
       {
