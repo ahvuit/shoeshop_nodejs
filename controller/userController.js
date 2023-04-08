@@ -3,6 +3,8 @@ const Profile = require("../models/profile");
 const validateMongoDbId = require("../utils/validateMongoDbId");
 const HttpStatusCode = require("../config/HttpStatusCode");
 const asyncHandler = require("express-async-handler");
+const bcrypt = require("bcrypt");
+const crypto = require("crypto");
 
 const { generateToken } = require("../config/jwtToken");
 const { generateRefreshToken } = require("../config/refreshtoken");
@@ -156,4 +158,29 @@ const updateUser = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { createUser, loginUser, index, detail, updateUser };
+const changePassword = asyncHandler(async (req, res) => {
+  const id = req.params.id;
+  validateMongoDbId(id);
+  try {
+    const findUser = await User.findOne({ id });
+
+    const salt = await bcrypt.genSaltSync(10);
+    findUser.password = await bcrypt.hash(req.body?.password, salt);
+    findUser.save();
+
+    res.status(HttpStatusCode.OK).json({
+      success: true,
+      status: 200,
+      message: "Successfully",
+      data: findUser,
+    });
+  } catch (error) {
+    res.status(HttpStatusCode.BAD_REQUEST).json({
+      success: false,
+      status: 400,
+      message: error.message,
+    });
+  }
+});
+
+module.exports = { createUser, loginUser, index, detail, updateUser, changePassword };

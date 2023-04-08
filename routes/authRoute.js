@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { createUser, loginUser, index, detail, updateUser } = require('../controller/userController');
+const { createUser, loginUser, index, detail, updateUser, changePassword } = require('../controller/userController');
 const { rating } = require('../controller/ratingController');
 const { getAllComments, createComment } = require('../controller/commentController');
 const { insertOrUpdateKeyword, getProductByUserId } = require('../controller/searchHistoryController');
@@ -21,6 +21,7 @@ router.post('/login', loginUser);
 router.get('/getAllUsers', auth.verifyToken, auth.isAdmin, index);
 router.get('/getUserDetails/:id', auth.verifyToken, detail);
 router.put('/updateUser/:id', auth.verifyToken, auth.isAdmin, updateUser);
+router.put('/changePassword/:id', auth.verifyToken, changePassword);
 //router profile
 router.get('/getProfileDetails/:id', auth.verifyToken, getProfile);
 router.put('/updateProfile/:id', auth.verifyToken, updateProfile);
