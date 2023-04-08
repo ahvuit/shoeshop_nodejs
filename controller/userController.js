@@ -158,22 +158,49 @@ const updateUser = asyncHandler(async (req, res) => {
   }
 });
 
+function fastFunction(newPassword, findUser) {
+  return new Promise((resolve) => {
+    setTimeout(async function () {
+      findUser.password = newPassword;
+      findUser.save();
+      resolve()
+    }, 100)
+  })
+}
+
+function slowFunction(findUser, res) {
+  return new Promise((resolve) => {
+    setTimeout(function () {
+      res.status(HttpStatusCode.OK).json({
+        success: true,
+        status: 200,
+        message: "Successfully",
+        data: findUser,
+      });
+      resolve()
+    }, 300)
+  })
+}
+
 const changePassword = asyncHandler(async (req, res) => {
-  const id = req.params.id;
-  validateMongoDbId(id);
   try {
-    const findUser = await User.findOne({ id });
+    const id = req.params.id;
+    validateMongoDbId(id);
+    const oldPassword = await req.body.oldPassword;
+    const newPassword = await req.body.newPassword;
+    const findUser = await User.findOne({ _id: id });
 
-    const salt = await bcrypt.genSaltSync(10);
-    findUser.password = await bcrypt.hash(req.body?.password, salt);
-    findUser.save();
+    if (findUser && (await findUser.isPasswordMatched(oldPassword))) {
+      return await Promise.all([fastFunction(newPassword, findUser), slowFunction(findUser, res)]);
+    } else {
+      res.status(HttpStatusCode.NOT_FOUND).json({
+        success: false,
+        status: 401,
+        message: "password is not matched",
+        data: [],
+      });
+    }
 
-    res.status(HttpStatusCode.OK).json({
-      success: true,
-      status: 200,
-      message: "Successfully",
-      data: findUser,
-    });
   } catch (error) {
     res.status(HttpStatusCode.BAD_REQUEST).json({
       success: false,
